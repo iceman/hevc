@@ -92,6 +92,9 @@ pub struct Args {
 	
 	#[arg(skip)]
 	pub paths: Vec<PathBuf>,
+	
+	#[arg(skip)]
+	pub encoding_required: bool,
 }
 
 pub fn parse_jobs_and_context() -> Result<(Vec<Job>, Context), Box<dyn Error>> {
@@ -101,11 +104,12 @@ pub fn parse_jobs_and_context() -> Result<(Vec<Job>, Context), Box<dyn Error>> {
 impl Args {
 	fn jobs_and_context(mut self) -> Result<(Vec<Job>, Context), Box<dyn Error>> {
 		self.pitch_down = -self.pitch_down;
+		self.encoding_required = self.vr || self.filter.is_some() || self.special.filter().is_some();
 		
-		if self.vr && self.video.is_copy() {
-			return Err("VR flag cannot be used with video copy.".into())
+		if self.encoding_required && self.video.is_copy() {
+			return Err("Filters or vr flag cannot be used with video copy.".into())
 		}
-				
+		
 		let jobs = self.paths()?
 			.into_iter()
 			.map(|path| Job::new(path, &self))
@@ -122,7 +126,7 @@ impl Args {
 #[cfg(test)]
 mod tests {
 	use super::*;
-
+	
 	fn args_with_paths(paths: Vec<&str>) -> Args {
 		Args {
 			audio: Audio::Auto,
@@ -132,6 +136,7 @@ mod tests {
 			debug: false,
 			default_video: Video::HEVC,
 			delete: 0,
+			encoding_required: false,
 			filetype: "mkv".into(),
 			filter: None,
 			force_overwrite: false,
