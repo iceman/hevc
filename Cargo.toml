@@ -1,0 +1,22 @@
+[package]
+name = "hevc"
+version = "0.8.0"
+edition = "2024"
+authors = ["Andrew Eisberg <https://github.com/iceman>"]
+repository = "https://git.lemi.re/iceman/hevc"
+description = "FFMPEG Batch Converter"
+
+[badges]
+coveralls = { repository = "https://github.com/iceman/hevc", branch = "master", service = "github" }
+maintenance = { status = "actively-developed" }
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+colored = "3"
+crossterm = "0"
+ctrlc = "3"
+regex = "1"
+unicode-width = "0.2.2"
+
+[target.'cfg(target_os = "macos")'.dependencies]
+xattr = "1"
